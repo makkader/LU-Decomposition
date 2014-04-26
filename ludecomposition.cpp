@@ -1,3 +1,8 @@
+/*
+Author: Md Abdul Kader
+University Of Texas at El Paso
+*/
+
 #include<iostream>
 #include<vector>
 using namespace std;
