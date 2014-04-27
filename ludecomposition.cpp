@@ -2,7 +2,7 @@
 Author: Md Abdul Kader
 University Of Texas at El Paso
 */
-
+#include<cstdio>
 #include<iostream>
 #include<vector>
 using namespace std;
@@ -337,16 +337,22 @@ pair<matrix,matrix> LUDecompose(matrix A){
 	return pair<matrix,matrix>(L,U);
 	
 }
+void getMatrix(int dim,double A[]){
 
+	freopen("A.txt","r",stdin);
+	for(int i=0;i<dim;i++)
+		for(int j=0;j<dim;j++)
+			cin>>A[i*dim+j];
+
+}
 int main(){
 	
+	const int dim=100;
 	
-	double ar[]={0.81472,0.09754,0.15761,0.14189,0.65574,
-0.90579,0.2785,0.97059,0.42176,0.035712,
-0.12699,0.54688,0.95717,0.91574,0.84913,
-0.91338,0.95751,0.48538,0.79221,0.93399,
-0.63236,0.96489,0.80028,0.95949,0.67874};
-	matrix AA(5,5);
+	double ar[dim*dim];
+	getMatrix(dim,ar);
+	
+	matrix AA(dim,dim);
 	AA.set(ar);
 	pair<matrix, matrix> p=LUDecompose(AA);
 	p.first.show();
