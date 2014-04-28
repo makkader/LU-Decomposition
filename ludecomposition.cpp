@@ -2,6 +2,7 @@
 Author: Md Abdul Kader
 University Of Texas at El Paso
 */
+#include<omp.h>
 #include<cstdio>
 #include<iostream>
 #include<vector>
@@ -347,39 +348,24 @@ void getMatrix(int dim,double A[]){
 }
 int main(){
 	
-	const int dim=100;
+	const int dim=500;
 	
 	double ar[dim*dim];
 	getMatrix(dim,ar);
 	
 	matrix AA(dim,dim);
 	AA.set(ar);
+	double st=omp_get_wtime();
 	pair<matrix, matrix> p=LUDecompose(AA);
+	double et=omp_get_wtime()-st;
+	printf("Sequential Elapsed time: %lf\n",et);
+	/*
 	p.first.show();
 	p.second.show();
 	
 	multiply(p.first,p.second).show();
-	/*
-	int l[]={1,0,0,	3,1,0,	4,5,1};
-	matrix L(3,3);
-	L.set(l);
+	*/
 	
-	int a[]={5,	6,	7};
-	matrix A(3,1);
-	A.set(a);
-	
-	solveLower(A,L).show();
-	
-	int u[]={1,5,7,	0,6,8,	0,0,9};
-	matrix U(3,3);
-	U.set(u);
-	
-	matrix B(1,3);
-	B.set(a);
-	matrix X=solveUpper(B,U);
-	X.show();	
-	multiply(X,U).show();
-*/	
 
 return 0;
 }
