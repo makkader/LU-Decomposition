@@ -129,6 +129,8 @@ matrix combineMatrix(matrix A00,matrix A01,matrix A10,matrix A11){
 }
 
 matrix solveUpper(matrix A, matrix U){
+	
+	//printf("Upper ID %d\n",omp_get_thread_num());
 	if(A.row==0|| A.col==0){
 		matrix zero(0,0);
 		return zero;
@@ -156,18 +158,31 @@ matrix solveUpper(matrix A, matrix U){
 	for(int i=0;i<L10.row;i++)
 		L10.mat[i][0]=A10.mat[i][0]/U.mat[0][0];
 		
-	matrix iA01=subtract(A01,multiply(L00,U01));
-	matrix L01=solveUpper(iA01,U11);
+	matrix L11,L01;
+	#pragma omp parallel sections 
+	{	
+  		#pragma omp section 
+   		{ 
+   			matrix iA01=subtract(A01,multiply(L00,U01));
+			L01=solveUpper(iA01,U11);
 
+   		}
+   		#pragma omp section 
+   		{ 
+   			matrix iA11=subtract(A11,multiply(L10,U01));
+			L11=solveUpper(iA11,U11);
+   		}
+
+	}
 	
-	matrix iA11=subtract(A11,multiply(L10,U01));
-	matrix L11=solveUpper(iA11,U11);
+	
+	
 	
 	return combineMatrix(L00,L01,L10,L11);
 }
 void solveLower(matrix A, matrix L,matrix *rU){
 	
-	
+	//printf("LOWER ID %d\n",omp_get_thread_num());
 	if(A.row==0 || A.col==0){
 	
 		matrix zero(0,0);
@@ -195,13 +210,27 @@ void solveLower(matrix A, matrix L,matrix *rU){
 	L10.set(L.mat,1,0);
 	L11.set(L.mat,1,1);
 	
-	matrix iA10=subtract(A10,multiply(L10,U00));
-	matrix U10;
-	solveLower(iA10,L11,&U10);
+	matrix U11, U10;
+	#pragma omp parallel sections 
+	{	
+  		#pragma omp section 
+   		{ 
+   			matrix iA10=subtract(A10,multiply(L10,U00));
+			
+			solveLower(iA10,L11,&U10);
+
+   		}
+   		#pragma omp section 
+   		{ 
+   			matrix iA11=subtract(A11,multiply(L10,U01));
+			
+			solveLower(iA11,L11,&U11);
+   		}
+
+	}
 	
-	matrix iA11=subtract(A11,multiply(L10,U01));
-	matrix U11;
-	solveLower(iA11,L11,&U11);
+	
+	
 	
 	matrix U=combineMatrix(U00,U01,U10,U11);
 	*rU=U;
@@ -288,13 +317,17 @@ pair<matrix,matrix> LUDecompose(matrix A){
 	matrix U01(L00.col,A01.col);
 	matrix L10;
 	
-	solveLower(A01,L00,&U01);
-	#pragma omp parallel sections 
+	solveLower(A01,L00,&U01); 
+	#pragma omp parallel sections num_threads(2) 
 	{	
   		#pragma omp section 
-   		{ solveLower(A01,L00,&U01);}
+   		{ 
+   			solveLower(A01,L00,&U01);
+   		}
    		#pragma omp section 
-   		{ L10=solveUpper(A10,U00);}
+   		{ 
+   			L10=solveUpper(A10,U00);
+   		}
 
 	}
 	
@@ -320,7 +353,7 @@ void getMatrix(int dim,double A[]){
 }
 int main(){
 	
-	const int dim=100;
+	const int dim=500;
 	
 	double ar[dim*dim];
 	getMatrix(dim,ar);
@@ -330,7 +363,7 @@ int main(){
 	pair<matrix, matrix> p;
 	
 	omp_set_dynamic(0);
-  	omp_set_num_threads(4);
+  	//omp_set_num_threads(4);
 	
 	double start_t=omp_get_wtime();
 	#pragma omp parallel shared(AA)
@@ -352,7 +385,7 @@ int main(){
 	}
 	double elapse_t=omp_get_wtime()-start_t;
 	
-	printf("elapse time: %lf\n",elapse_t);
+	printf("Omp Elapse time: %lf\n",elapse_t);
 
 return 0;
 }
