@@ -4,6 +4,7 @@ Author: Md Abdul Kader
 University Of Texas at El Paso
 */
 #include<omp.h>
+#include<cmath>
 #include<cstdio>
 #include<iostream>
 #include<vector>
@@ -27,6 +28,7 @@ class matrix{
 	matrix(){
 		//printf("empty constructor\n");
 	}
+	/*
 	matrix(const matrix &obj){
 		
 		//printf("copy constructor s\n");
@@ -45,6 +47,7 @@ class matrix{
 				
 		//printf("copy constructor id %d\n",omp_get_thread_num());
 	}
+	*/
 	void set(vii super,int ri,int cj){//after creating matrix need to set values;
 	
 		for(int i=0;i<row;i++)
@@ -180,6 +183,55 @@ matrix solveUpper(matrix A, matrix U){
 	
 	return combineMatrix(L00,L01,L10,L11);
 }
+
+matrix solveLower(matrix A, matrix L){
+	
+	if(A.row==0 || A.col==0){
+	
+		matrix zero(0,0);
+		return zero;
+	}
+	else if(L.row==1){
+		return A;
+	}
+	
+	
+	matrix U00(1,1);
+	U00.set(A.mat,0,0);
+	
+	matrix U01(1,A.col-1);
+	U01.set(A.mat,0,1);
+	
+	matrix A10(A.row-1,1),A11(A.row-1,A.col-1);
+	A10.set(A.mat,1,0);
+	A11.set(A.mat,1,1);
+	
+	matrix L10(L.row-1,1),L11(L.row-1,L.col-1);
+	L10.set(L.mat,1,0);
+	L11.set(L.mat,1,1);
+	matrix  U10,U11;
+	#pragma omp parallel sections 
+	{	
+  		#pragma omp section 
+   		{ 
+   			matrix iA10=subtract(A10,multiply(L10,U00));
+			U10=solveLower(iA10,L11);
+   		}
+   		#pragma omp section 
+   		{ 
+   			matrix iA11=subtract(A11,multiply(L10,U01));
+			 U11=solveLower(iA11,L11);
+   		}
+
+	}
+	
+	
+	
+	
+	
+	return combineMatrix(U00,U01,U10,U11);
+}
+/*
 void solveLower(matrix A, matrix L,matrix *rU){
 	
 	//printf("LOWER ID %d\n",omp_get_thread_num());
@@ -236,7 +288,7 @@ void solveLower(matrix A, matrix L,matrix *rU){
 	*rU=U;
 	//return U;
 }
-
+*/
 matrix makeL(matrix L00,matrix L10,matrix L11){
 
 	matrix L(L00.row+L10.row,L00.col+L11.col);
@@ -317,12 +369,12 @@ pair<matrix,matrix> LUDecompose(matrix A){
 	matrix U01(L00.col,A01.col);
 	matrix L10;
 	
-	solveLower(A01,L00,&U01); 
+	 
 	#pragma omp parallel sections num_threads(2) 
 	{	
   		#pragma omp section 
    		{ 
-   			solveLower(A01,L00,&U01);
+   			U01=solveLower(A01,L00);
    		}
    		#pragma omp section 
    		{ 
@@ -351,6 +403,14 @@ void getMatrix(int dim,double A[]){
 			cin>>A[i*dim+j];
 
 }
+string isEqual(matrix A,matrix B){//auxiliary method
+	string False("False"),True("True");
+	for(int i=0;i<A.row;i++)
+		for(int j=0;j<A.col;j++)
+			if(fabs(A.mat[i][j]-B.mat[i][j])>0.000001)
+				return False;
+	return True;
+}
 int main(){
 	
 	const int dim=500;
@@ -372,20 +432,22 @@ int main(){
 		{
 			p=LUDecompose(AA);
 		
+			
 			/*
-			printf("T_id=%d\n",omp_get_thread_num());
 		
 			p.first.show();
 			p.second.show();
 			
 			multiply(p.first,p.second).show();
 			*/
+			
 		}
 		
 	}
 	double elapse_t=omp_get_wtime()-start_t;
 	
-	printf("Omp Elapse time: %lf\n",elapse_t);
+	printf("Omp Elapsed time: %lf\n",elapse_t);
+	cout<<"Is it correct solution? "<<isEqual(AA,multiply(p.first,p.second))<<endl;
 
 return 0;
 }
