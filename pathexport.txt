@@ -1,7 +1,0 @@
-/Users/Mak/Documents/openmp_install/build
-
-export PATH=/install/prefix/bin:$PATH
-export C_INCLUDE_PATH=/install/prefix/include:/Users/Mak/Documents/openmp_install/build/include:$C_INCLUDE_PATH
-export CPLUS_INCLUDE_PATH=/install/prefix/include:/Users/Mak/Documents/openmp_install/build/include:$CPLUS_INCLUDE_PATH
-export LIBRARY_PATH=/install/prefix/lib:/Users/Mak/Documents/openmp_install/build/lib:$LIBRARY_PATH
-export DYLD_LIBRARY_PATH=/install/prefix/lib:/Users/Mak/Documents/openmp_install/build/lib:$DYLD_LIBRARY_PATH
