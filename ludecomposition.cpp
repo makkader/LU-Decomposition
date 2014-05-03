@@ -212,7 +212,7 @@ matrix solveLower1(matrix A, matrix L){
 }
 matrix solveLower(matrix A, matrix L){ //div/2 algo 
 	
-	if(A.row<16)
+	if(A.row<4)
 		return solveLower1(A,L);
 	//printf("r %d, C=%d A\n",A.row,A.col);
 	int r=A.row;
@@ -251,7 +251,7 @@ matrix solveLower(matrix A, matrix L){ //div/2 algo
 
 matrix solveUpper(matrix A, matrix U){// div/2 algo 
 	
-	if(A.row<16)
+	if(A.row<4)
 		return solveUpper1(A,U);
 	int r=A.row;
 	int c=A.col;
@@ -389,17 +389,17 @@ string isEqual(matrix A,matrix B){//auxiliary method
 				return False;
 	return True;
 }
-void getMatrix(int dim,double A[]){
+const int dim=500;
 
-	freopen("A2500.txt","r",stdin);
+void getMatrix(int dim,double A[]){
+	char fn[100];
+	sprintf(fn,"A%d.txt",dim);
+	freopen(fn,"r",stdin);
 	for(int i=0;i<dim;i++)
 		for(int j=0;j<dim;j++)
 			cin>>A[i*dim+j];
-
 }
 int main(){
-	
-	const int dim=2500;
 	
 	double *ar;
 	ar=new double[dim*dim];
@@ -413,7 +413,10 @@ int main(){
 	double et=omp_get_wtime()-st;
 	printf("Sequential Elapsed time: %lf\n",et);
 	
-	cout<<"Is it correct solution? "<<isEqual(AA,multiply(p.first,p.second))<<endl;
+	if(dim<=2000){
+		printf("Verifying...\n");	
+		cout<<"Is it correct solution? "<<isEqual(AA,multiply(p.first,p.second))<<endl;
+	}
 	/*
 	p.first.show();
 	p.second.show();

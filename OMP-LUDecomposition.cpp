@@ -291,7 +291,7 @@ matrix solveLower1(matrix A, matrix L){
 }
 matrix solveLower(matrix A, matrix L){ //div/2 algo 
 	
-	if(A.row<16)
+	if(A.row<4)
 		return solveLower1(A,L);
 	//printf("r %d, C=%d A\n",A.row,A.col);
 	int r=A.row;
@@ -340,7 +340,7 @@ matrix solveLower(matrix A, matrix L){ //div/2 algo
 
 matrix solveUpper(matrix A, matrix U){// div/2 algo 
 	
-	if(A.row<16)
+	if(A.row<4)
 		return solveUpper1(A,U);
 	int r=A.row;
 	int c=A.col;
@@ -463,7 +463,8 @@ pair<matrix,matrix> LUDecompose(matrix A){
 	matrix U00=p.second;
 	
 	matrix U01,L10;
-	if(A.row>64){
+	if(A.row>4){
+	
 		#pragma omp task shared(U01)
    		{ 
    			U01=solveLower(A01,L00);
@@ -473,6 +474,7 @@ pair<matrix,matrix> LUDecompose(matrix A){
    			L10=solveUpper(A10,U00);
    		}
 		#pragma omp taskwait
+		
 	}
 	else {
 	
@@ -501,9 +503,11 @@ string isEqual(matrix A,matrix B){//auxiliary method
 				return False;
 	return True;
 }
+const int dim=3000;
 void getMatrix(int dim,double A[]){
-
-	freopen("A2500.txt","r",stdin);
+	char fn[100];
+	sprintf(fn,"A%d.txt",dim);
+	freopen(fn,"r",stdin);
 	for(int i=0;i<dim;i++)
 		for(int j=0;j<dim;j++)
 			cin>>A[i*dim+j];
@@ -511,7 +515,6 @@ void getMatrix(int dim,double A[]){
 }
 int main(){
 	
-	const int dim=2500;
 	
 	double ar[dim*dim];
 	getMatrix(dim,ar);
@@ -521,7 +524,7 @@ int main(){
 	pair<matrix, matrix> p;
 	
 	omp_set_dynamic(1);
-  	omp_set_num_threads(2);
+  	omp_set_num_threads(4);
 	
 	double start_t=omp_get_wtime();
 	#pragma omp parallel shared(AA)
@@ -536,8 +539,10 @@ int main(){
 	double elapse_t=omp_get_wtime()-start_t;
 	
 	printf("Omp Elapsed time: %lf\n",elapse_t);
-	cout<<"Is it correct solution? "<<isEqual(AA,multiply(p.first,p.second))<<endl;
-
+	if(dim<=2000){
+		printf("Verifying...\n");
+		cout<<"Is it correct solution? "<<isEqual(AA,multiply(p.first,p.second))<<endl;
+	}
 	
 
 return 0;

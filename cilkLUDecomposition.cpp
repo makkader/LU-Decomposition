@@ -183,7 +183,7 @@ matrix solveLower1(matrix A, matrix L){
 }
 matrix solveLower(matrix A, matrix L){ //div/2 algo 
 	
-	if(A.row<16)
+	if(A.row<4)
 		return solveLower1(A,L);
 	//printf("r %d, C=%d A\n",A.row,A.col);
 	int r=A.row;
@@ -222,7 +222,7 @@ matrix solveLower(matrix A, matrix L){ //div/2 algo
 
 matrix solveUpper(matrix A, matrix U){// div/2 algo 
 	
-	if(A.row<16)
+	if(A.row<4)
 		return solveUpper1(A,U);
 	int r=A.row;
 	int c=A.col;
@@ -343,11 +343,8 @@ pair<matrix,matrix> LUDecompose(matrix A){
 	
 	
 	U01=cilk_spawn solveLower(A01,L00);
-	// solveLower(A01,L00,&U01);
-   		
 	L10=cilk_spawn solveUpper(A10,U00);
-	//L10= solveUpper(A10,U00);
-   	cilk_sync;
+	cilk_sync;
    
 	matrix iA11=subtract(A11,multiply(L10,U01));
 	
@@ -370,18 +367,20 @@ string isEqual(matrix A,matrix B){//auxiliary method
 				return False;
 	return True;
 }
-void getMatrix(int dim,double A[]){
 
-	freopen("A2500.txt","r",stdin);
+const int dim=3000;
+
+void getMatrix(int dim,double A[]){
+	char fn[100];
+	sprintf(fn,"A%d.txt",dim);
+	freopen(fn,"r",stdin);
 	for(int i=0;i<dim;i++)
 		for(int j=0;j<dim;j++)
 			cin>>A[i*dim+j];
 
 }
 int main(){
-	
-	const int dim=2500;
-	
+		
 	double ar[dim*dim];
 	getMatrix(dim,ar);
 	
@@ -389,7 +388,7 @@ int main(){
 	AA.set(ar);
 	pair<matrix, matrix> p;
 	
-	__cilkrts_set_param("nworkers","2");
+	__cilkrts_set_param("nworkers","4");
 	
 	double start_t=omp_get_wtime();
 	
@@ -399,7 +398,9 @@ int main(){
 
 	
 	printf("Cilk Elapse time: %lf\n",elapse_t);
-	cout<<"Is it correct solution? "<<isEqual(AA,multiply(p.first,p.second))<<endl;
-
+	if(dim<=2000){
+		printf("Verifying...\n");
+		cout<<"Is it correct solution? "<<isEqual(AA,multiply(p.first,p.second))<<endl;
+	}
 return 0;
 }
