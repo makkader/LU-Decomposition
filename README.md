@@ -7,7 +7,7 @@ Copyright: You can use it for any purpose except as a project work for CS5334/43
 
 Taksed Based LU-Decomposition
 =============================
-* File structure:
+File structure:
 -------------
 	1. ludecomposition.cpp
 		->This is the sequential implementation of LU decomposition.
@@ -16,20 +16,20 @@ Taksed Based LU-Decomposition
 	3. cilkLUDecomposition.cpp
 		-> This is the cilk version of LU decomposition. 
 		
-* Compile:
+Compile:
 ---------
 	I used intel c++ compiler without any optimization. 
 	To compile any file use the command 
 	icpc -openmp -o <filename>.out <filename>.cpp 
-* Run:
+Run:
 -----
 	./<filename>.out
 
-* Testing:
-*--------
+Testing:
+--------
 	I have added a 3000x3000 matrix in A3000.txt file. After downloading the code if you compile and run it will decompose that 3000x3000 matrix. 
 	To change the size of the matrix you just need to change the variable const int 'dim'.   
-* Note:
+ Note:
  -----
 	The verification steps will not be performed if dimension size is greater than 2000x2000. 
 	
