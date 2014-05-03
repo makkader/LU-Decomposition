@@ -30,7 +30,7 @@ Testing:
 	I have added a 3000x3000 matrix in A3000.txt file. After downloading the code if you compile and run it will decompose that 3000x3000 matrix. 
 	To change the size of the matrix you just need to change the variable const int 'dim'.   
  Note:
- -----
+------
 	The verification steps will not be performed if dimension size is greater than 2000x2000. 
 	
 
