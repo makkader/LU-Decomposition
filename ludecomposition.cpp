@@ -389,7 +389,7 @@ string isEqual(matrix A,matrix B){//auxiliary method
 				return False;
 	return True;
 }
-const int dim=500;
+const int dim=3000;
 
 void getMatrix(int dim,double A[]){
 	char fn[100];
