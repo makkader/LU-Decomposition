@@ -20,7 +20,7 @@ Taksed Based LU-Decomposition
 ---------
 	I used intel c++ compiler without any optimization. 
 	To compile any file use the command 
-	<code>icpc -openmp -o <filename>.out <filename>.cpp </code>
+	icpc -openmp -o <filename>.out <filename>.cpp 
 * Run:
 -----
 	./<filename>.out
